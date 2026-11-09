@@ -1,0 +1,26 @@
+services:
+  postgis:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: op_dromos
+      POSTGRES_USER: op_dromos
+      POSTGRES_PASSWORD: op_dromos
+    ports:
+      - "5432:5432"
+
+  valhalla:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    ports:
+      - "8002:8002"
+    depends_on:
+      - postgis
+
+  api:
+    build:
+      context: /home/runner/work/op_dromos/op_dromos/go/api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - valhalla
+      - postgis
